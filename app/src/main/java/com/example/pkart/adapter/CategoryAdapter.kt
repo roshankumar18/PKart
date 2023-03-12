@@ -2,6 +2,7 @@ package com.example.pkart.adapter
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +16,7 @@ import com.example.pkart.model.CategoryModel
 
 
 class CategoryAdapter(var context : Context, val list:ArrayList<CategoryModel>) : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>() {
-
+    private val TAG = "CategoryAdapter"
     class CategoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val binding = LayoutCategoryItemBinding.bind(itemView)
     }
@@ -31,8 +32,9 @@ class CategoryAdapter(var context : Context, val list:ArrayList<CategoryModel>) 
 
         holder.itemView.setOnClickListener {
             val intent = Intent(context,CategoryActivity::class.java)
-            context.startActivity(intent)
+            Log.d(TAG, "onBindViewHolder: ${list[position].cate}")
             intent.putExtra("cat",list[position].cate)
+            context.startActivity(intent)
         }
     }
 
