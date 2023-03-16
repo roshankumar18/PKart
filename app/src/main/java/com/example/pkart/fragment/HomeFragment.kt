@@ -5,12 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.pkart.R
 import com.example.pkart.adapter.CategoryAdapter
 import com.example.pkart.adapter.ProductAdapter
 import com.example.pkart.databinding.FragmentHomeBinding
 import com.example.pkart.model.CategoryModel
-import com.example.pkart.model.ProductModel
+import com.example.pkart.model.ProductModels
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
@@ -29,14 +28,14 @@ class HomeFragment : Fragment() {
     }
 
     private fun getProducts() {
-        val list = ArrayList<ProductModel>()
+        val list = ArrayList<ProductModels>()
         Firebase.firestore.collection("products")
             .get()
             .addOnSuccessListener {
 //            list.clear()
                 for (document in it.documents){
 
-                    val data = document.toObject<ProductModel>()
+                    val data = document.toObject<ProductModels>()
                     list.add(data!!)
 
                 }

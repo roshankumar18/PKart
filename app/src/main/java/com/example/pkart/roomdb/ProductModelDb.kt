@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "products")
-data class ProductModel(
+data class ProductModelDb(
     @PrimaryKey val productId :String,
     val productName : String? ="",
     val productImage : String? = "",

@@ -1,6 +1,6 @@
 package com.example.pkart.model
 
-data class ProductModel(
+data class ProductModels(
     val productName:String?="",
     val productDescription:String?="",
     val productCoverImg:String?="",

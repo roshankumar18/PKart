@@ -9,11 +9,11 @@ import androidx.room.Query
 @Dao
 interface ProductDao {
     @Insert
-    suspend fun insertProduct(productModel: ProductModel)
+    suspend fun insertProduct(productModelDb: ProductModelDb)
     @Delete
-    suspend fun deleteProduct(productModel: ProductModel)
+    suspend fun deleteProduct(productModelDB: ProductModelDb)
     @Query("SELECT * FROM products")
-    fun getAll(): LiveData<List<ProductModel>>
-    @Query("SELECT * FROM products where productId = :id")
-    fun isExist(id:String) : ProductModel
+    fun getAll(): LiveData<List<ProductModelDb>>
+    @Query("SELECT * FROM products WHERE productId = :id")
+    suspend fun isExist(id:String) : ProductModelDb
 }

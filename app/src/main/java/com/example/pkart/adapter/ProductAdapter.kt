@@ -10,9 +10,9 @@ import com.bumptech.glide.Glide
 import com.example.pkart.R
 import com.example.pkart.activity.ProductDetailsActivity
 import com.example.pkart.databinding.LayoutProductItemBinding
-import com.example.pkart.model.ProductModel
+import com.example.pkart.model.ProductModels
 
-class ProductAdapter(val context: Context , val list :ArrayList<ProductModel>) :
+class ProductAdapter(val context: Context , val list :ArrayList<ProductModels>) :
     RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
     class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val binding = LayoutProductItemBinding.bind(itemView)
