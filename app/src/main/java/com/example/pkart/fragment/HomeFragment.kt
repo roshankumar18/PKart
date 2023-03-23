@@ -5,6 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.findNavController
+import com.example.pkart.R
 import com.example.pkart.adapter.CategoryAdapter
 import com.example.pkart.adapter.ProductAdapter
 import com.example.pkart.databinding.FragmentHomeBinding
@@ -22,10 +25,15 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentHomeBinding.inflate(layoutInflater)
+        val preferences = requireContext().getSharedPreferences("info",AppCompatActivity.MODE_PRIVATE)
+
+        if(preferences.getBoolean("isCart",false))
+            findNavController().navigate(R.id.action_homeFragment_to_cartFragment)
         getCategories()
         getProducts()
         return binding.root
     }
+
 
     private fun getProducts() {
         val list = ArrayList<ProductModels>()
@@ -34,12 +42,9 @@ class HomeFragment : Fragment() {
             .addOnSuccessListener {
 //            list.clear()
                 for (document in it.documents){
-
                     val data = document.toObject<ProductModels>()
                     list.add(data!!)
-
                 }
-
                 binding.productRecycler.adapter = ProductAdapter(requireContext(),list)
             }
     }
@@ -56,7 +61,6 @@ class HomeFragment : Fragment() {
                     list.add(data!!)
 
                 }
-
                 binding.categoryRecycler.adapter = CategoryAdapter(requireContext(),list)
             }
     }
