@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import com.example.pkart.R
+import com.example.pkart.activity.AddressActivity
 import com.example.pkart.adapter.CartAdapter
 import com.example.pkart.databinding.FragmentCartBinding
 import com.example.pkart.roomdb.AppDatabase
@@ -44,6 +45,11 @@ class CartFragment : Fragment() {
            price += Integer.parseInt(i.productSp)
        }
         binding.textView2.text = "Total cost : $price"
+        binding.checkout.setOnClickListener {
+            val intent = Intent(context,AddressActivity::class.java)
+            intent.putExtra("totalCost",price)
+            startActivity(intent)
+        }
     }
 
 }
