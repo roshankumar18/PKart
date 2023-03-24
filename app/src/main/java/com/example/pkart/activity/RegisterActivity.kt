@@ -10,6 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import com.example.pkart.R
 import com.example.pkart.databinding.ActivityAddressBinding
 import com.example.pkart.databinding.ActivityRegisterBinding
+import com.example.pkart.model.UserModel
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -44,14 +45,19 @@ class RegisterActivity : AppCompatActivity() {
             .create()
         builder.show()
 
-        val data = hashMapOf<String,Any>()
-        data["name"] = binding.userName.text.toString()
-        data["number"] = binding.number.text.toString()
+
+        val data = UserModel(userName = binding.userName.text.toString(), userPhoneNumber =binding.number.text.toString() )
 
         Firebase.firestore.collection("Users").document(binding.userName.text.toString())
             .set(data).addOnSuccessListener {
+                builder.dismiss()
                 Toast.makeText(this, "user registered", Toast.LENGTH_SHORT).show()
+
+                startActivity(Intent(this,LoginActivity::class.java))
+                finish()
+
             }.addOnFailureListener {
+                builder.dismiss()
                 Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show()
             }
 
