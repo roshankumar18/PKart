@@ -19,6 +19,7 @@ import com.example.pkart.roomdb.ProductModelDb
 class CartFragment : Fragment() {
 
     private lateinit var binding: FragmentCartBinding
+    private lateinit var list: ArrayList<String>
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -30,7 +31,12 @@ class CartFragment : Fragment() {
         editor.putBoolean("isCart",false)
         editor.apply()
         val dao = AppDatabase.getDatabase(requireContext()).productDao()
+        list = ArrayList()
         dao.getAll().observe(requireActivity()){
+            list.clear()
+            for (data in it){
+                list.add(data.productId)
+            }
             binding.cartRecycler.adapter = CartAdapter(requireContext(),it)
             totalCost(it)
             binding.textView1.text = "Total item in cart is : ${it.size}"
@@ -47,7 +53,8 @@ class CartFragment : Fragment() {
         binding.textView2.text = "Total cost : $price"
         binding.checkout.setOnClickListener {
             val intent = Intent(context,AddressActivity::class.java)
-            intent.putExtra("totalCost",price)
+            intent.putExtra("totalCost",price.toString())
+            intent.putStringArrayListExtra("productIds",list)
             startActivity(intent)
         }
     }

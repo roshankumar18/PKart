@@ -16,6 +16,7 @@ import com.google.firebase.ktx.Firebase
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
+    private var TAG = "RegisterActivity"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
@@ -47,15 +48,13 @@ class RegisterActivity : AppCompatActivity() {
 
 
         val data = UserModel(userName = binding.userName.text.toString(), userPhoneNumber =binding.number.text.toString() )
-
-        Firebase.firestore.collection("Users").document(binding.userName.text.toString())
+        Log.w(TAG, "storeData: ${binding.number.text.toString()}")
+        Firebase.firestore.collection("Users").document(binding.number.text.toString())
             .set(data).addOnSuccessListener {
                 builder.dismiss()
                 Toast.makeText(this, "user registered", Toast.LENGTH_SHORT).show()
-
                 startActivity(Intent(this,LoginActivity::class.java))
                 finish()
-
             }.addOnFailureListener {
                 builder.dismiss()
                 Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show()
