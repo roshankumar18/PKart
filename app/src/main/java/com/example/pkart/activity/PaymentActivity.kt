@@ -132,7 +132,7 @@ class PaymentActivity : AppCompatActivity(), PaymentResultWithDataListener,
         val firestore = Firebase.firestore.collection("allOrders")
         val key = firestore.document().id
         data["orderId"]=key
-        firestore.add(data).addOnSuccessListener {
+        firestore.document(key).set(data).addOnSuccessListener {
             Log.w(TAG, "saveData: In Firestore", )
             Log.w(TAG, "saveData: $data", )
             Toast.makeText(this, "Order Placed", Toast.LENGTH_SHORT).show()
