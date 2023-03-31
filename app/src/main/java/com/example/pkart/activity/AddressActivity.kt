@@ -19,12 +19,19 @@ class AddressActivity : AppCompatActivity() {
     private lateinit var builder:AlertDialog
     private var TAG = "AddressActivity"
     private lateinit var totalCost :String
+    private lateinit var list:ArrayList<String>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddressBinding.inflate(layoutInflater)
+        list = ArrayList()
+//        Log.w(TAG, "onCreate: ${intent.getStringArrayListExtra("productIds")::class.java.typeName}", )
+        list = intent.getStringArrayListExtra("productIds") as ArrayList<String>
+        Log.w(TAG, "onCreate: $list", )
         preferences =  this.getSharedPreferences("user", MODE_PRIVATE)
         setContentView(binding.root)
         totalCost = intent.getStringExtra("totalCost")!!
+        Toast.makeText(this, "$totalCost", Toast.LENGTH_SHORT).show()
+        Log.w(TAG, "onCreate: Checkout : $totalCost", )
         loadUserInfo()
         builder = AlertDialog.Builder(this)
             .setTitle("Loading...")
@@ -59,8 +66,9 @@ class AddressActivity : AppCompatActivity() {
         Firebase.firestore.collection("Users").document(preferences.getString("number","")!!)
             .update(map).addOnSuccessListener {
                 val intent = Intent(this,PaymentActivity::class.java)
-                intent.putStringArrayListExtra("productIds",intent.getStringArrayListExtra("productIds"))
+                intent.putStringArrayListExtra("productIds",list)
                 intent.putExtra("totalCost",totalCost)
+                Log.w(TAG, "storeData: $totalCost", )
                 startActivity(intent)
                 finish()
                 Toast.makeText(this, "Updated", Toast.LENGTH_SHORT).show()

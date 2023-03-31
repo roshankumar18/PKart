@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.pkart.R
 import com.example.pkart.activity.AddressActivity
@@ -20,6 +21,8 @@ class CartFragment : Fragment() {
 
     private lateinit var binding: FragmentCartBinding
     private lateinit var list: ArrayList<String>
+    private lateinit var adapter: CartAdapter
+    private var TAG = "CartFragment"
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -30,14 +33,19 @@ class CartFragment : Fragment() {
         val editor = preference.edit()
         editor.putBoolean("isCart",false)
         editor.apply()
+
         val dao = AppDatabase.getDatabase(requireContext()).productDao()
         list = ArrayList()
+        adapter = CartAdapter(requireContext(),ArrayList<ProductModelDb>())
         dao.getAll().observe(requireActivity()){
             list.clear()
             for (data in it){
                 list.add(data.productId)
+                Log.w(TAG, "onCreateView: ${data.productId}", )
+                Log.w(TAG, "onCreateView: ${list}", )
             }
-            binding.cartRecycler.adapter = CartAdapter(requireContext(),it)
+            adapter = CartAdapter(requireContext(),it)
+            binding.cartRecycler.adapter = adapter
             totalCost(it)
             binding.textView1.text = "Total item in cart is : ${it.size}"
         }
@@ -53,10 +61,14 @@ class CartFragment : Fragment() {
         binding.textView2.text = "Total cost : $price"
         binding.checkout.setOnClickListener {
             val intent = Intent(context,AddressActivity::class.java)
+            Toast.makeText(requireContext(), "$price", Toast.LENGTH_SHORT).show()
             intent.putExtra("totalCost",price.toString())
+            Log.w(TAG, "totalCost: $list", )
             intent.putStringArrayListExtra("productIds",list)
             startActivity(intent)
         }
     }
+
+
 
 }

@@ -19,14 +19,16 @@ import com.razorpay.ExternalWalletListener
 import com.razorpay.PaymentData
 import com.razorpay.PaymentResultWithDataListener
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 class PaymentActivity : AppCompatActivity(), PaymentResultWithDataListener,
     ExternalWalletListener{
     private lateinit var co :Checkout
-    private lateinit var price:String
+    private  var price:Int =0
     private var TAG= "PaymentActivity"
+    private lateinit var productIds:ArrayList<String>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment)
@@ -34,8 +36,13 @@ class PaymentActivity : AppCompatActivity(), PaymentResultWithDataListener,
         co = Checkout()
         co.setKeyID("rzp_test_0Do2l6qA0gwmTF")
         Checkout.sdkCheckIntegration(this)
+        productIds = ArrayList()
+        productIds.clear()
+//        productIds.add(intent.getStringArrayListExtra("productIds").toString())
+        productIds = intent.getStringArrayListExtra("productIds") as ArrayList<String>
+        Log.w(TAG, "onCreate: $productIds", )
+        price = intent.getStringExtra("totalCost")!!.toInt()
         startPayment()
-        price = intent.getStringExtra("totalCost")!!
     }
 
     private fun startPayment() {
@@ -53,9 +60,8 @@ class PaymentActivity : AppCompatActivity(), PaymentResultWithDataListener,
             options.put("theme.color", "#3399cc");
             options.put("currency","INR");
 //            options.put("order_id", "order_DBJOWzybf0sJbb");
-            options.put("amount",10000)//pass amount in currency subunits
-
-
+            Log.w(TAG, "startPayment: ${price::class.java.typeName},${price}", )
+            options.put("amount",price*100)//pass amount in currency subunits
 
             val prefill = JSONObject()
             prefill.put("email","gaurav.kumar@example.com")
@@ -70,31 +76,43 @@ class PaymentActivity : AppCompatActivity(), PaymentResultWithDataListener,
         }
     }
     override fun onPaymentSuccess(p0: String?, p1: PaymentData?) {
-        Toast.makeText(this, "Payment Success", Toast.LENGTH_SHORT).show()
-        uploadData()
+        try {
+            Toast.makeText(this, "Payment Success", Toast.LENGTH_SHORT).show()
+            uploadData()
+            startActivity(Intent(this,MainActivity::class.java))
+            finish()
+        }
+        catch (exception:Exception){
+            Log.w(TAG, "onPaymentSuccess: ${exception.message}", )
+        }
     }
 
     private fun uploadData() {
-        val id = intent.getStringArrayExtra("productIds")
-        for (current in id!!){
+        Log.w(TAG, "uploadData: IN upload data method", )
+        val id = productIds
+
+//        Toast.makeText(this, "products ${id?.size}", Toast.LENGTH_SHORT).show()
+        Log.w(TAG, "uploadData: ${id.size}", )
+        for (current in id){
             fetchData(current)
         }
+
     }
 
     private fun fetchData(productId: String?) {
         val dao = AppDatabase.getDatabase(this).productDao()
         Firebase.firestore.collection("products").document(productId!!)
             .get().addOnSuccessListener {
-                lifecycleScope.launch(Dispatchers.IO) {
-                    dao.deleteProduct(
-                        ProductModelDb(
-                            productId,
-                            it.getString("productName"),
-                            it.getString("productCoverImg"),
-                            it.getString("productSp")
-                        )
-                    )
+                val db = ProductModelDb(
+                    productId,
+                    it.getString("productName"),
+                    it.getString("productCoverImg"),
+                    it.getString("productSp")
+                )
+                GlobalScope.launch(Dispatchers.IO) {
+                    dao.deleteProduct(db)
                 }
+                Log.w(TAG, "fetchData: Ended", )
                 saveData(it.getString("productCoverImg"),
                     it.getString("productSp"),productId,
                     it.getString("productName"))
@@ -110,11 +128,13 @@ class PaymentActivity : AppCompatActivity(), PaymentResultWithDataListener,
         data["sp"]= productSp!!
         data["status"]="Ordered"
         data["userId"] = preference.getString("number","")!!
-
+        Log.w(TAG, "saveData: In Save data", )
         val firestore = Firebase.firestore.collection("allOrders")
         val key = firestore.document().id
         data["orderId"]=key
         firestore.add(data).addOnSuccessListener {
+            Log.w(TAG, "saveData: In Firestore", )
+            Log.w(TAG, "saveData: $data", )
             Toast.makeText(this, "Order Placed", Toast.LENGTH_SHORT).show()
             startActivity(Intent(this,MainActivity::class.java))
             finish()

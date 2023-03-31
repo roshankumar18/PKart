@@ -47,4 +47,5 @@ class CartAdapter(var context: Context ,val list: List<ProductModelDb>): Recycle
     override fun getItemCount(): Int {
         return list.size
     }
+
 }

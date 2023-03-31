@@ -47,7 +47,6 @@ class LoginActivity : AppCompatActivity() {
         PhoneAuthProvider.verifyPhoneNumber(options)
 
 
-
     }
     val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
